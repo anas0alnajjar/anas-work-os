@@ -1,0 +1,32 @@
+<?php
+return [
+    'app_name' => 'Anas Work OS',
+    'timezone' => 'Asia/Damascus',
+    'session_name' => 'anas_work_os_session',
+    'app_url' => 'https://example.com/os',
+    'setup_secret' => 'CHANGE_ME_WITH_A_LONG_RANDOM_VALUE',
+    'install_enabled' => false,
+    'registration_enabled' => false,
+    'email_verification_enabled' => true,
+    'password_reset_minutes' => 60,
+    'db' => [
+        'host' => 'localhost',
+        'port' => 3306,
+        'name' => 'anas_work_os',
+        'user' => 'CHANGE_ME',
+        'pass' => 'CHANGE_ME',
+        'charset' => 'utf8mb4',
+    ],
+    'mail' => [
+        'enabled' => false,
+        'host' => 'smtp.example.com',
+        'port' => 465,
+        'encryption' => 'ssl',
+        'username' => 'notifications@example.com',
+        'password' => 'CHANGE_ME',
+        'from_email' => 'notifications@example.com',
+        'from_name' => 'Anas Work OS',
+        'recipient' => 'you@example.com',
+        'timeout' => 20,
+    ],
+];

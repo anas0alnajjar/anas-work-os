@@ -1,0 +1,24 @@
+# Secrets and environment-specific configuration
+.env
+.env.*
+!.env.example
+config.local.php
+config.production.php
+
+# Persistent user/runtime data
+storage/documents/*
+!storage/documents/.gitkeep
+uploads/
+sessions/
+cache/
+caches/
+backups/
+db/
+
+# Generated artifacts
+release/
+*.log
+*.sql.gz
+*.tar.gz
+*.zip
+*.bak
