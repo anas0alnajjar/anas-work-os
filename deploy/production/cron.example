@@ -1,0 +1,2 @@
+0 * * * * /usr/bin/flock -n /tmp/anas-reminders.lock /usr/bin/docker exec anas-web php /var/www/public_html/os/cron/send_reminders.php >> /docker/anas/backups/reminders.log 2>&1
+5 3 * * * /usr/bin/flock -n /tmp/anas-backup.lock /docker/anas/backup.sh >> /docker/anas/backups/backup.log 2>&1

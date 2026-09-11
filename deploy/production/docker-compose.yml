@@ -1,0 +1,47 @@
+services:
+  db:
+    image: mariadb:11.8
+    container_name: anas-db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASS}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - anas-internal
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mariadb-admin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD --silent"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: anas-web
+    restart: unless-stopped
+    volumes:
+      - ./source/public_html:/var/www/public_html
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - anas-internal
+      - nginx-proxy
+
+networks:
+  anas-internal:
+    driver: bridge
+
+  nginx-proxy:
+    external: true
+    name: nginx-proxy
