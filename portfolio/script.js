@@ -3,18 +3,43 @@ const nav = document.querySelector('.site-nav');
 const header = document.querySelector('.site-header');
 const langButton = document.querySelector('.lang-toggle');
 
+function setNavigationState(isOpen) {
+  nav?.classList.toggle('open', isOpen);
+  navToggle?.setAttribute('aria-expanded', String(isOpen));
+  const isArabic = document.documentElement.lang === 'ar';
+  navToggle?.setAttribute('aria-label', isOpen
+    ? (isArabic ? 'إغلاق قائمة التنقل' : 'Close navigation')
+    : (isArabic ? 'فتح قائمة التنقل' : 'Open navigation'));
+}
+
 navToggle?.addEventListener('click', () => {
-  const isOpen = nav.classList.toggle('open');
-  navToggle.setAttribute('aria-expanded', String(isOpen));
-  navToggle.setAttribute('aria-label', isOpen ? 'Close navigation' : 'Open navigation');
+  setNavigationState(!nav.classList.contains('open'));
 });
 
 document.querySelectorAll('.site-nav a').forEach((link) => {
   link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    navToggle?.setAttribute('aria-expanded', 'false');
+    setNavigationState(false);
   });
 });
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && nav?.classList.contains('open')) {
+    setNavigationState(false);
+    navToggle?.focus();
+  }
+});
+
+document.addEventListener('click', (event) => {
+  if (nav?.classList.contains('open') && !header?.contains(event.target)) {
+    setNavigationState(false);
+  }
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 900 && nav?.classList.contains('open')) {
+    setNavigationState(false);
+  }
+}, { passive: true });
 
 window.addEventListener('scroll', () => {
   header?.classList.toggle('scrolled', window.scrollY > 8);
@@ -56,6 +81,8 @@ function applyLanguage(language) {
     langButton.textContent = isArabic ? 'English' : 'العربية';
     langButton.setAttribute('aria-label', isArabic ? 'Switch to English' : 'التبديل إلى العربية');
   }
+
+  setNavigationState(nav?.classList.contains('open') || false);
 
   localStorage.setItem('anas-site-lang', activeLanguage);
 }
