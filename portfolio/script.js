@@ -24,6 +24,30 @@ document.querySelectorAll('.site-nav a').forEach((link) => {
   });
 });
 
+const sectionLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'))
+  .filter((link) => link.getAttribute('href') !== '#contact');
+const observedSections = sectionLinks
+  .map((link) => document.querySelector(link.getAttribute('href')))
+  .filter(Boolean);
+
+if ('IntersectionObserver' in window && observedSections.length) {
+  const navigationObserver = new IntersectionObserver((entries) => {
+    const current = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+    if (!current) return;
+    sectionLinks.forEach((link) => {
+      const isActive = link.getAttribute('href') === `#${current.target.id}`;
+      link.classList.toggle('active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }, { rootMargin: '-18% 0px -62% 0px', threshold: [0, 0.1, 0.35] });
+
+  observedSections.forEach((section) => navigationObserver.observe(section));
+}
+
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && nav?.classList.contains('open')) {
     setNavigationState(false);
