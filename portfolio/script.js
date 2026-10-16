@@ -142,9 +142,23 @@ function renderGallery() {
   if (!photoGallery || !galleryItems.length) return;
   photoGallery.replaceChildren();
 
+  const secondaryCount = Math.max(0, galleryItems.length - 1);
+  const secondaryRemainder = secondaryCount % 3;
+  const balancedTailStart = secondaryCount === 1
+    ? 1
+    : secondaryRemainder === 2
+      ? galleryItems.length - 2
+      : secondaryRemainder === 1 && secondaryCount >= 4
+        ? galleryItems.length - 4
+        : Number.POSITIVE_INFINITY;
+
   galleryItems.forEach((item, index) => {
     const figure = document.createElement('figure');
-    figure.className = `field-note field-note-${(index % 6) + 1}`;
+    figure.className = 'field-note';
+    if (index === 0) figure.classList.add('field-note-featured');
+    else if (secondaryCount === 1) figure.classList.add('field-note-solo');
+    else if (index >= balancedTailStart) figure.classList.add('field-note-wide');
+    if (Number(item.height) > Number(item.width) * 1.1) figure.classList.add('field-note-portrait');
 
     const button = document.createElement('button');
     button.className = 'field-note-image';
