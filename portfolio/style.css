@@ -196,18 +196,18 @@ a:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 136, 204, .38
 .experience-intro h2 { max-width:760px; }
 .experience-context { display:grid; justify-items:start; gap:24px; padding-bottom:7px; }
 .experience-context > p { margin:0; color:var(--muted); font-size:15px; line-height:1.82; }
-.timeline { display:grid; gap:12px; margin:0; padding:0; list-style:none; }
-.timeline li { position:relative; display:grid; grid-template-columns:130px 145px minmax(0,1fr); gap:26px; align-items:center; min-height:124px; padding:22px 28px 22px 22px; background:white; border:1px solid var(--line); box-shadow:0 8px 22px rgba(0,35,71,.035); transition:border-color 160ms ease,transform 160ms ease,box-shadow 160ms ease; }
-.timeline li::after { content:""; position:absolute; inset-block:18px; inset-inline-start:-1px; width:3px; background:var(--blue); transform:scaleY(.24); transform-origin:center; transition:transform 160ms ease; }
-.timeline li:hover { border-color:#b9cdd9; transform:translateY(-2px); box-shadow:0 14px 34px rgba(0,35,71,.075); }
-.timeline li:hover::after { transform:scaleY(1); }
-.org-logo { width:80px; height:76px; display:grid; place-items:center; justify-self:center; padding:10px; overflow:hidden; background:#fff; border:1px solid #dce5ea; }
-.org-logo img { width:100%; height:100%; object-fit:contain; }
-.org-logo-square { padding:7px; }
-.org-logo-wide { width:122px; padding:13px 8px; }
-.org-logo-pair { grid-template-rows:1fr auto; gap:5px; padding:6px 9px 7px; }
-.org-logo-pair img:first-child { width:42px; height:42px; }
-.org-logo-pair img:last-child { width:55px; height:12px; padding-top:4px; border-top:1px solid var(--line); }
+.timeline { display:grid; gap:0; margin:0; padding:0; overflow:hidden; list-style:none; background:#fff; border-block:1px solid var(--line-strong); }
+.timeline li { display:grid; grid-template-columns:142px 132px minmax(0,1fr); gap:24px; align-items:center; min-height:128px; padding:25px 14px; border-bottom:1px solid var(--line); transition:background-color 160ms ease; }
+.timeline li:last-child { border-bottom:0; }
+.timeline li:hover { background:#f9fcfe; }
+.org-logo { width:118px; height:64px; display:flex; align-items:center; justify-content:center; justify-self:center; padding:0; overflow:visible; background:transparent; border:0; }
+.org-logo img { display:block; width:auto; height:auto; max-width:112px; max-height:52px; object-fit:contain; }
+.org-logo-square img { max-width:66px; max-height:62px; }
+.org-logo-mark img { max-width:92px; max-height:60px; }
+.org-logo-wide img { max-width:116px; max-height:42px; }
+.org-logo-pair { width:124px; display:grid; grid-template-columns:46px minmax(0,1fr); gap:10px; }
+.org-logo-pair img:first-child { max-width:44px; max-height:48px; }
+.org-logo-pair img:last-child { max-width:64px; max-height:30px; padding-inline-start:10px; border-inline-start:1px solid var(--line); }
 .timeline-date { color:var(--blue-dark); font-size:11px; font-weight:800; line-height:1.5; font-variant-numeric:tabular-nums; }
 .timeline-copy { min-width:0; padding-inline-start:24px; border-inline-start:1px solid var(--line); }
 .timeline h3 { margin:0 0 6px; color:var(--navy); font-size:20px; line-height:1.38; letter-spacing:-.02em; }
@@ -278,9 +278,10 @@ a:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 136, 204, .38
   .system-featured { grid-template-columns:40px minmax(0,1fr); }
   .system-featured .system-evidence { grid-column:2; }
   .system-support { min-height:720px; padding:26px; }
-  .timeline li { grid-template-columns:110px 116px minmax(0,1fr); gap:20px; padding-inline:18px 22px; }
-  .org-logo { width:70px; height:70px; }
+  .timeline li { grid-template-columns:122px 116px minmax(0,1fr); gap:20px; padding-inline:12px 20px; }
+  .org-logo { width:104px; }
   .org-logo-wide { width:104px; }
+  .org-logo-pair { width:108px; grid-template-columns:42px minmax(0,1fr); gap:8px; }
   .product-card { grid-template-columns:60px 180px 1fr 125px; }
 }
 
@@ -303,8 +304,11 @@ a:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 136, 204, .38
   .system-support { min-height:0; }
   .experience-intro { grid-template-columns:1fr; gap:24px; }
   .experience-context { gap:18px; padding-bottom:0; }
-  .timeline li { grid-template-columns:94px 108px minmax(0,1fr); gap:18px; }
-  .org-logo-wide { width:90px; }
+  .timeline li { grid-template-columns:100px 108px minmax(0,1fr); gap:18px; }
+  .org-logo,.org-logo-wide { width:90px; }
+  .org-logo-pair { width:94px; grid-template-columns:36px minmax(0,1fr); gap:7px; }
+  .org-logo-pair img:first-child { max-width:36px; max-height:40px; }
+  .org-logo-pair img:last-child { max-width:49px; padding-inline-start:7px; }
   .timeline-copy { padding-inline-start:18px; }
   .product-card { grid-template-columns:55px 180px 1fr; }
   .product-status,.product-card > a { grid-column:3; }
@@ -393,9 +397,17 @@ a:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 136, 204, .38
   .reporting-evidence { grid-template-columns:repeat(3,1fr); }
 
   .experience-grid { gap:38px; }
-  .timeline li { grid-template-columns:62px 1fr; gap:5px 16px; min-height:0; padding:18px; align-items:start; }
-  .org-logo { grid-column:1; grid-row:1 / span 2; width:62px; height:62px; }
-  .org-logo-wide { width:62px; }
+  .timeline { border-block-color:var(--line); }
+  .timeline li { grid-template-columns:72px 1fr; gap:6px 16px; min-height:0; padding:22px 10px; align-items:start; }
+  .org-logo { grid-column:1; grid-row:1 / span 2; width:70px; height:58px; align-self:center; }
+  .org-logo img { max-width:68px; max-height:44px; }
+  .org-logo-square img { max-width:54px; max-height:54px; }
+  .org-logo-mark img { max-width:64px; max-height:48px; }
+  .org-logo-wide { width:70px; }
+  .org-logo-wide img { max-width:68px; max-height:34px; }
+  .org-logo-pair { width:70px; grid-template-columns:30px minmax(0,1fr); gap:5px; }
+  .org-logo-pair img:first-child { max-width:30px; max-height:34px; }
+  .org-logo-pair img:last-child { max-width:35px; max-height:22px; padding-inline-start:5px; }
   .timeline-date { grid-column:2; grid-row:1; }
   .timeline-copy { grid-column:2; grid-row:2; padding-inline-start:0; border-inline-start:0; }
   .timeline h3 { margin-top:0; font-size:19px; }
