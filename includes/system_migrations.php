@@ -115,6 +115,43 @@ function system_migration_definitions(): array {
         '20260721_104_per_user_reminder_hour' => static function(PDO $pdo): void {
             system_add_column($pdo,'users','reminder_hour','TINYINT UNSIGNED NOT NULL DEFAULT 9 AFTER `reminders_enabled`');
         },
+        '20261016_105_portfolio_media' => static function(PDO $pdo, int $ownerUserId): void {
+            system_add_column($pdo,'users','portfolio_enabled','TINYINT(1) NOT NULL DEFAULT 0 AFTER `reminder_hour`');
+            $portfolioOwners = (int)$pdo->query('SELECT COUNT(*) FROM users WHERE portfolio_enabled=1')->fetchColumn();
+            if ($portfolioOwners === 0) {
+                $statement = $pdo->prepare('UPDATE users SET portfolio_enabled=1 WHERE id=?');
+                $statement->execute([$ownerUserId]);
+            }
+            $pdo->exec("CREATE TABLE IF NOT EXISTS portfolio_media (
+                id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                user_id INT UNSIGNED NOT NULL,
+                title_ar VARCHAR(190) NOT NULL,
+                title_en VARCHAR(190) NULL,
+                caption_ar TEXT NOT NULL,
+                caption_en TEXT NULL,
+                alt_text_ar VARCHAR(255) NOT NULL,
+                alt_text_en VARCHAR(255) NULL,
+                captured_on DATE NULL,
+                project_name VARCHAR(190) NULL,
+                organization_name VARCHAR(190) NULL,
+                people_context VARCHAR(255) NULL,
+                location VARCHAR(190) NULL,
+                original_name VARCHAR(255) NOT NULL,
+                stored_name VARCHAR(100) NOT NULL,
+                mime_type VARCHAR(40) NOT NULL,
+                size_bytes INT UNSIGNED NOT NULL,
+                image_width SMALLINT UNSIGNED NOT NULL,
+                image_height SMALLINT UNSIGNED NOT NULL,
+                sort_order SMALLINT NOT NULL DEFAULT 0,
+                is_published TINYINT(1) NOT NULL DEFAULT 0,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_portfolio_media_stored_name(stored_name),
+                INDEX idx_portfolio_media_owner(user_id,created_at),
+                INDEX idx_portfolio_media_public(user_id,is_published,sort_order,captured_on),
+                CONSTRAINT fk_portfolio_media_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        },
     ];
 }
 
@@ -158,7 +195,7 @@ function system_apply_pending_migrations(PDO $pdo, int $ownerUserId, ?string $le
 
 function system_ownership_summary(PDO $pdo, int $ownerUserId): array {
     $summary = [];
-    foreach (['organizations','job_applications','content_topics','reminder_dispatches','content_reminder_logs'] as $table) {
+    foreach (['organizations','job_applications','content_topics','portfolio_media','reminder_dispatches','content_reminder_logs'] as $table) {
         if (!system_table_exists($pdo,$table)) { $summary[$table]=['exists'=>false,'total'=>0,'owned'=>0,'unowned'=>0]; continue; }
         $total = (int)$pdo->query("SELECT COUNT(*) FROM `{$table}`")->fetchColumn();
         if (!system_column_exists($pdo,$table,'user_id')) { $summary[$table]=['exists'=>true,'total'=>$total,'owned'=>0,'unowned'=>$total]; continue; }

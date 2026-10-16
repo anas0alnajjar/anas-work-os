@@ -4,6 +4,15 @@ const header = document.querySelector('.site-header');
 const langButton = document.querySelector('.lang-toggle');
 const flowTabs = Array.from(document.querySelectorAll('.flow-tab'));
 const flowPanels = Array.from(document.querySelectorAll('.flow-panel'));
+const fieldNotesSection = document.querySelector('[data-feed]');
+const fieldNotesNavigation = document.querySelector('.field-notes-nav');
+const photoGallery = document.querySelector('[data-photo-gallery]');
+const galleryCount = document.querySelector('[data-gallery-count]');
+const photoLightbox = document.querySelector('[data-photo-lightbox]');
+const lightboxImage = document.querySelector('[data-photo-lightbox-image]');
+const lightboxTitle = document.querySelector('[data-photo-lightbox-title]');
+const lightboxCaption = document.querySelector('[data-photo-lightbox-caption]');
+const lightboxMeta = document.querySelector('[data-photo-lightbox-meta]');
 
 function setNavigationState(isOpen) {
   nav?.classList.toggle('open', isOpen);
@@ -91,6 +100,116 @@ if ('IntersectionObserver' in window) {
 }
 
 let activeLanguage = localStorage.getItem('anas-site-lang') || 'en';
+let galleryItems = [];
+
+function formatGalleryDate(value) {
+  if (!value) return '';
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(activeLanguage === 'ar' ? 'ar-SY' : 'en-GB', {
+    year: 'numeric',
+    month: 'long',
+    timeZone: 'UTC'
+  }).format(date);
+}
+
+function galleryText(item, field) {
+  return item[`${field}_${activeLanguage}`] || item[`${field}_ar`] || '';
+}
+
+function galleryContext(item) {
+  return [formatGalleryDate(item.captured_on), item.project_name, item.organization_name, item.location]
+    .filter(Boolean);
+}
+
+function openPhotoLightbox(item) {
+  if (!photoLightbox || !lightboxImage || !lightboxTitle || !lightboxCaption || !lightboxMeta) return;
+  lightboxImage.src = item.image_url;
+  lightboxImage.alt = galleryText(item, 'alt_text');
+  lightboxTitle.textContent = galleryText(item, 'title');
+  lightboxCaption.textContent = galleryText(item, 'caption');
+  lightboxMeta.replaceChildren(...galleryContext(item).map((value) => {
+    const span = document.createElement('span');
+    span.textContent = value;
+    return span;
+  }));
+  photoLightbox.querySelector('[data-photo-lightbox-close]')?.setAttribute('aria-label', activeLanguage === 'ar' ? 'إغلاق الصورة' : 'Close image');
+  if (typeof photoLightbox.showModal === 'function') photoLightbox.showModal();
+  else photoLightbox.setAttribute('open', '');
+}
+
+function renderGallery() {
+  if (!photoGallery || !galleryItems.length) return;
+  photoGallery.replaceChildren();
+
+  galleryItems.forEach((item, index) => {
+    const figure = document.createElement('figure');
+    figure.className = `field-note field-note-${(index % 6) + 1}`;
+
+    const button = document.createElement('button');
+    button.className = 'field-note-image';
+    button.type = 'button';
+    button.setAttribute('aria-label', `${activeLanguage === 'ar' ? 'عرض الصورة:' : 'View image:'} ${galleryText(item, 'title')}`);
+    button.addEventListener('click', () => openPhotoLightbox(item));
+
+    const image = document.createElement('img');
+    image.src = item.image_url;
+    image.alt = galleryText(item, 'alt_text');
+    image.loading = index < 2 ? 'eager' : 'lazy';
+    image.decoding = 'async';
+    if (item.width) image.width = item.width;
+    if (item.height) image.height = item.height;
+    button.append(image);
+
+    const caption = document.createElement('figcaption');
+    const meta = document.createElement('div');
+    meta.className = 'field-note-meta';
+    galleryContext(item).forEach((value) => {
+      const span = document.createElement('span');
+      span.textContent = value;
+      meta.append(span);
+    });
+    const title = document.createElement('h3');
+    title.textContent = galleryText(item, 'title');
+    const copy = document.createElement('p');
+    copy.textContent = galleryText(item, 'caption');
+    caption.append(meta, title, copy);
+    if (item.people_context) {
+      const people = document.createElement('small');
+      people.textContent = item.people_context;
+      caption.append(people);
+    }
+    figure.append(button, caption);
+    photoGallery.append(figure);
+  });
+
+  if (galleryCount) {
+    galleryCount.textContent = activeLanguage === 'ar'
+      ? `${galleryItems.length} ${galleryItems.length === 1 ? 'صورة منشورة' : 'صور منشورة'}`
+      : `${galleryItems.length} published ${galleryItems.length === 1 ? 'image' : 'images'}`;
+  }
+}
+
+async function loadGallery() {
+  if (!fieldNotesSection || !photoGallery) return;
+  try {
+    const response = await fetch(fieldNotesSection.dataset.feed, { headers: { Accept: 'application/json' } });
+    if (!response.ok) return;
+    const payload = await response.json();
+    galleryItems = Array.isArray(payload.items) ? payload.items : [];
+    if (!galleryItems.length) return;
+    fieldNotesSection.hidden = false;
+    if (fieldNotesNavigation) fieldNotesNavigation.hidden = false;
+    renderGallery();
+  } catch (_) {
+    // The portfolio remains complete when the optional album feed is unavailable.
+  }
+}
+
+document.querySelector('[data-photo-lightbox-close]')?.addEventListener('click', () => photoLightbox?.close());
+photoLightbox?.addEventListener('click', (event) => {
+  if (event.target === photoLightbox) photoLightbox.close();
+});
 
 function activateFlow(flowName, moveFocus = false) {
   flowTabs.forEach((tab) => {
@@ -149,6 +268,8 @@ function applyLanguage(language) {
 
   setNavigationState(nav?.classList.contains('open') || false);
 
+  if (galleryItems.length) renderGallery();
+
   localStorage.setItem('anas-site-lang', activeLanguage);
 }
 
@@ -163,3 +284,4 @@ langButton?.addEventListener('click', () => {
 
 applyLanguage(activeLanguage);
 activateFlow(document.querySelector('.flow-tab.active')?.dataset.flow || 'collect');
+loadGallery();

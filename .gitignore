@@ -8,6 +8,8 @@ config.production.php
 # Persistent user/runtime data
 storage/documents/*
 !storage/documents/.gitkeep
+storage/portfolio/*
+!storage/portfolio/.gitkeep
 uploads/
 sessions/
 cache/

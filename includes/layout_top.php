@@ -8,6 +8,7 @@ $pageDescriptions = [
     'contacts' => 'تابع المحادثات والخطوات التالية دون أن تضيع أي علاقة',
     'jobs' => 'أدر طلبات التوظيف من الحفظ وحتى العرض الوظيفي',
     'content' => 'حوّل فكرة أسبوعية واحدة إلى ثلاث نسخ واضحة ومناسبة لكل منصة',
+    'portfolio_album' => 'أدر صور خبرتك المهنية وسياقها قبل نشرها في موقعك الشخصي',
 ];
 $pageDescription = $pageDescription ?? ($pageDescriptions[$active] ?? 'مساحة عملك المهنية في مكان واحد');
 $todayLabel = date('Y/m/d');
@@ -57,6 +58,10 @@ $todayLabel = date('Y/m/d');
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm4 4h8M8 13h5M7 2v3M17 2v3"/></svg>
                 <span>خطة المحتوى</span>
             </a>
+            <a class="<?= $active==='portfolio_album'?'active':'' ?>" href="portfolio_album.php">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm3 10 3-3 3 3 2-2 2 2M9 9h.01"/></svg>
+                <span>ألبوم الموقع</span>
+            </a>
         </nav>
 
         <div class="sidebar-focus">
@@ -105,7 +110,12 @@ $todayLabel = date('Y/m/d');
                 </div>
             </div>
             <div class="top-actions">
-                <?php if ($active==='content'): ?>
+                <?php if ($active==='portfolio_album'): ?>
+                <a class="btn" href="#album-editor">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    <span>صورة جديدة</span>
+                </a>
+                <?php elseif ($active==='content'): ?>
                 <a class="btn" href="content_topic_form.php">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
                     <span>موضوع إضافي</span>
