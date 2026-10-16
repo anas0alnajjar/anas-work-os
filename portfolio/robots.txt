@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /os/
+
+Sitemap: https://anas.masar-up.com/sitemap.xml
