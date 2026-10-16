@@ -25,9 +25,10 @@ try {
 
 $payload = array_map(static function(array $item): array {
     $mediaKind = ($item['media_kind'] ?? 'image') === 'video' ? 'video' : 'image';
-    $mediaUrl = absolute_app_url('portfolio_media_file.php?id='.(int)$item['id']);
+    $version = substr(hash('sha256',(string)$item['updated_at']),0,12);
+    $mediaUrl = absolute_app_url('portfolio_media_file.php?id='.(int)$item['id'].'&v='.$version);
     $posterUrl = $mediaKind === 'video' && $item['poster_stored_name']
-        ? absolute_app_url('portfolio_media_file.php?id='.(int)$item['id'].'&variant=poster')
+        ? absolute_app_url('portfolio_media_file.php?id='.(int)$item['id'].'&variant=poster&v='.$version)
         : null;
     return [
         'id'=>(int)$item['id'],
