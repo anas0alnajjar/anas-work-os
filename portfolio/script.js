@@ -153,27 +153,44 @@ function renderGallery() {
         : Number.POSITIVE_INFINITY;
 
   galleryItems.forEach((item, index) => {
+    const isVideo = item.type === 'video';
     const figure = document.createElement('figure');
     figure.className = 'field-note';
     if (index === 0) figure.classList.add('field-note-featured');
     else if (secondaryCount === 1) figure.classList.add('field-note-solo');
     else if (index >= balancedTailStart) figure.classList.add('field-note-wide');
+    if (isVideo) figure.classList.add('field-note-has-video');
     if (Number(item.height) > Number(item.width) * 1.1) figure.classList.add('field-note-portrait');
 
-    const button = document.createElement('button');
-    button.className = 'field-note-image';
-    button.type = 'button';
-    button.setAttribute('aria-label', `${activeLanguage === 'ar' ? 'عرض الصورة:' : 'View image:'} ${galleryText(item, 'title')}`);
-    button.addEventListener('click', () => openPhotoLightbox(item));
-
-    const image = document.createElement('img');
-    image.src = item.image_url;
-    image.alt = galleryText(item, 'alt_text');
-    image.loading = index < 2 ? 'eager' : 'lazy';
-    image.decoding = 'async';
-    if (item.width) image.width = item.width;
-    if (item.height) image.height = item.height;
-    button.append(image);
+    let media;
+    if (isVideo) {
+      const video = document.createElement('video');
+      video.className = 'field-note-video';
+      video.controls = true;
+      video.preload = 'metadata';
+      video.playsInline = true;
+      video.poster = item.poster_url || '';
+      video.setAttribute('aria-label', `${activeLanguage === 'ar' ? 'تشغيل الفيديو:' : 'Play video:'} ${galleryText(item, 'title')}`);
+      const source = document.createElement('source');
+      source.src = item.media_url;
+      video.append(source);
+      media = video;
+    } else {
+      const button = document.createElement('button');
+      button.className = 'field-note-image';
+      button.type = 'button';
+      button.setAttribute('aria-label', `${activeLanguage === 'ar' ? 'عرض الصورة:' : 'View image:'} ${galleryText(item, 'title')}`);
+      button.addEventListener('click', () => openPhotoLightbox(item));
+      const image = document.createElement('img');
+      image.src = item.image_url;
+      image.alt = galleryText(item, 'alt_text');
+      image.loading = index < 2 ? 'eager' : 'lazy';
+      image.decoding = 'async';
+      if (item.width) image.width = item.width;
+      if (item.height) image.height = item.height;
+      button.append(image);
+      media = button;
+    }
 
     const caption = document.createElement('figcaption');
     const meta = document.createElement('div');
@@ -193,14 +210,17 @@ function renderGallery() {
       people.textContent = item.people_context;
       caption.append(people);
     }
-    figure.append(button, caption);
+    figure.append(media, caption);
     photoGallery.append(figure);
   });
 
   if (galleryCount) {
-    galleryCount.textContent = activeLanguage === 'ar'
-      ? `${galleryItems.length} ${galleryItems.length === 1 ? 'صورة منشورة' : 'صور منشورة'}`
-      : `${galleryItems.length} published ${galleryItems.length === 1 ? 'image' : 'images'}`;
+    const videoCount = galleryItems.filter((item) => item.type === 'video').length;
+    const imageCount = galleryItems.length - videoCount;
+    const parts = [];
+    if (imageCount) parts.push(activeLanguage === 'ar' ? `${imageCount} صورة` : `${imageCount} ${imageCount === 1 ? 'image' : 'images'}`);
+    if (videoCount) parts.push(activeLanguage === 'ar' ? `${videoCount} فيديو` : `${videoCount} ${videoCount === 1 ? 'video' : 'videos'}`);
+    galleryCount.textContent = parts.join(' · ');
   }
 }
 

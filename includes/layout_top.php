@@ -20,7 +20,7 @@ $todayLabel = date('Y/m/d');
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="theme-color" content="#002347">
     <title><?= e($pageTitle) ?> | Anas Work OS</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/style.css?v=20261016-video-album">
 </head>
 <body>
 <div class="app-shell">
@@ -60,7 +60,7 @@ $todayLabel = date('Y/m/d');
             </a>
             <a class="<?= $active==='portfolio_album'?'active':'' ?>" href="portfolio_album.php">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4V5Zm3 10 3-3 3 3 2-2 2 2M9 9h.01"/></svg>
-                <span>ألبوم الموقع</span>
+                <span>وسائط الموقع</span>
             </a>
         </nav>
 
@@ -113,7 +113,7 @@ $todayLabel = date('Y/m/d');
                 <?php if ($active==='portfolio_album'): ?>
                 <a class="btn" href="#album-editor">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                    <span>صورة جديدة</span>
+                    <span>إضافة صورة أو فيديو</span>
                 </a>
                 <?php elseif ($active==='content'): ?>
                 <a class="btn" href="content_topic_form.php">

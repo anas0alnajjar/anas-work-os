@@ -9,10 +9,10 @@ header('X-Content-Type-Options: nosniff');
 
 try {
     $items = q(
-        'SELECT pm.id,pm.title_ar,pm.title_en,pm.caption_ar,pm.caption_en,
+        'SELECT pm.id,pm.media_kind,pm.title_ar,pm.title_en,pm.caption_ar,pm.caption_en,
                 pm.alt_text_ar,pm.alt_text_en,pm.captured_on,pm.project_name,
                 pm.organization_name,pm.people_context,pm.location,
-                pm.image_width,pm.image_height,pm.updated_at
+                pm.image_width,pm.image_height,pm.poster_stored_name,pm.updated_at
          FROM portfolio_media pm
          INNER JOIN users u ON u.id=pm.user_id
          WHERE pm.is_published=1 AND u.portfolio_enabled=1
@@ -24,8 +24,14 @@ try {
 }
 
 $payload = array_map(static function(array $item): array {
+    $mediaKind = ($item['media_kind'] ?? 'image') === 'video' ? 'video' : 'image';
+    $mediaUrl = absolute_app_url('portfolio_media_file.php?id='.(int)$item['id']);
+    $posterUrl = $mediaKind === 'video' && $item['poster_stored_name']
+        ? absolute_app_url('portfolio_media_file.php?id='.(int)$item['id'].'&variant=poster')
+        : null;
     return [
         'id'=>(int)$item['id'],
+        'type'=>$mediaKind,
         'title_ar'=>(string)$item['title_ar'],
         'title_en'=>(string)($item['title_en'] ?: $item['title_ar']),
         'caption_ar'=>(string)$item['caption_ar'],
@@ -37,7 +43,9 @@ $payload = array_map(static function(array $item): array {
         'organization_name'=>$item['organization_name'] ?: null,
         'people_context'=>$item['people_context'] ?: null,
         'location'=>$item['location'] ?: null,
-        'image_url'=>absolute_app_url('portfolio_media_file.php?id='.(int)$item['id']),
+        'media_url'=>$mediaUrl,
+        'image_url'=>$mediaKind === 'image' ? $mediaUrl : $posterUrl,
+        'poster_url'=>$posterUrl,
         'width'=>(int)$item['image_width'],
         'height'=>(int)$item['image_height'],
     ];

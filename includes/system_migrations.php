@@ -152,6 +152,89 @@ function system_migration_definitions(): array {
                 CONSTRAINT fk_portfolio_media_user FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
         },
+        '20261016_106_portfolio_video' => static function(PDO $pdo): void {
+            if (!system_table_exists($pdo,'portfolio_media')) throw new RuntimeException('Portfolio media table is unavailable.');
+            system_add_column($pdo,'portfolio_media','media_kind',"VARCHAR(12) NOT NULL DEFAULT 'image' AFTER `user_id`");
+            system_add_column($pdo,'portfolio_media','poster_original_name','VARCHAR(255) NULL AFTER `stored_name`');
+            system_add_column($pdo,'portfolio_media','poster_stored_name','VARCHAR(100) NULL AFTER `poster_original_name`');
+            system_add_column($pdo,'portfolio_media','poster_mime_type','VARCHAR(40) NULL AFTER `poster_stored_name`');
+            system_add_column($pdo,'portfolio_media','poster_size_bytes','INT UNSIGNED NULL AFTER `poster_mime_type`');
+        },
+        '20261016_107_portfolio_editorial_cleanup' => static function(PDO $pdo, int $ownerUserId): void {
+            if (!system_table_exists($pdo,'portfolio_media')) throw new RuntimeException('Portfolio media table is unavailable.');
+            $updates = [
+                1 => [
+                    'title_ar'=>'متابعة وتقييم جلسات تدريبية',
+                    'title_en'=>'Monitoring and evaluation of training sessions',
+                    'caption_ar'=>'متابعة وتقييم دورتين للشباب والفتيات في جمع البيانات ومهارات البرمجة، ضمن مشروع تنفذه ONSUR بتمويل من Human Concern International.',
+                    'caption_en'=>'Monitoring and evaluating two training courses for young women and men in data collection and programming skills, delivered by ONSUR with funding from Human Concern International.',
+                    'alt_text_ar'=>'أنس أثناء متابعة وتقييم جلسة تدريبية ضمن مشروع تنفذه ONSUR بتمويل من Human Concern International.',
+                    'alt_text_en'=>'Anas during the monitoring and evaluation of a training session delivered by ONSUR with funding from Human Concern International.',
+                    'project_name'=>'ZH50 Project','organization_name'=>'ONSUR','location'=>'Darayya','sort_order'=>10,
+                ],
+                2 => [
+                    'title_ar'=>'تنفيذ استبيان مع أحد المخبرين الرئيسيين',
+                    'title_en'=>'Key-informant questionnaire for a water-pump project',
+                    'caption_ar'=>'تنفيذ استبيان بعدي مع أحد المخبرين الرئيسيين ضمن مشروع إصلاح واستبدال مضخات مياه في ريف دمشق.',
+                    'caption_en'=>'Conducting a post-intervention questionnaire with a key informant for a water-pump repair and replacement project in Rural Damascus.',
+                    'alt_text_ar'=>'أنس يجري استبياناً بعدياً مع أحد المخبرين الرئيسيين ضمن مشروع لإصلاح مضخات المياه في ريف دمشق.',
+                    'alt_text_en'=>'Anas conducting a post-intervention questionnaire with a key informant for a water-pump project in Rural Damascus.',
+                    'project_name'=>'Water Pump Replacement Project in Rural Damascus','organization_name'=>'ONSUR','location'=>'Sidi Miqdad','sort_order'=>20,
+                ],
+                3 => [
+                    'title_ar'=>'عرض مشروع مسار ضمن مسابقة SCALE UP',
+                    'title_en'=>'Presenting Masar at the SCALE UP competition',
+                    'caption_ar'=>'عرض مشروع مسار مع الفريق للزوار ضمن مسابقة SCALE UP.',
+                    'caption_en'=>'Presenting the Masar project with the team to visitors during the SCALE UP competition.',
+                    'alt_text_ar'=>'أنس وفريق مسار يشرحون المشروع للزوار ضمن مسابقة SCALE UP.',
+                    'alt_text_en'=>'Anas and the Masar team presenting the project to visitors during the SCALE UP competition.',
+                    'project_name'=>'SCALE UP','organization_name'=>'SANAD','location'=>'The National Library','sort_order'=>30,
+                ],
+                4 => [
+                    'title_ar'=>'اجتماع مع القسم المالي في مؤسسة التكنوقراط السوريين',
+                    'title_en'=>'Meeting with the finance team at Syrian Technocrats',
+                    'caption_ar'=>'اجتماع ودي مع عدد من خبراء مؤسسة التكنوقراط السوريين لمناقشة جوانب مرتبطة بالإدارة المالية.',
+                    'caption_en'=>'An informal meeting with experts from Syrian Technocrats to discuss aspects of financial management.',
+                    'alt_text_ar'=>'أنس خلال اجتماع مع عدد من خبراء مؤسسة التكنوقراط السوريين لمناقشة الإدارة المالية.',
+                    'alt_text_en'=>'Anas meeting experts from Syrian Technocrats to discuss financial management.',
+                    'project_name'=>null,'organization_name'=>'Syrian Technocrats','location'=>'Al-Rayyes Cafe','sort_order'=>40,
+                ],
+                7 => [
+                    'title_ar'=>'اجتماع مع مؤسس التكنوقراط السوريين وعدد من الخبراء',
+                    'title_en'=>'Meeting with the founder and experts of Syrian Technocrats',
+                    'caption_ar'=>'اجتماع ضم مؤسس مؤسسة التكنوقراط السوريين وعدداً من أعضائها وخبرائها الموجودين في سوريا.',
+                    'caption_en'=>'A meeting with the founder, members and experts of Syrian Technocrats based in Syria.',
+                    'alt_text_ar'=>'أنس برفقة مؤسس مؤسسة التكنوقراط السوريين وعدد من أعضائها وخبرائها خلال اجتماع في دمشق.',
+                    'alt_text_en'=>'Anas with the founder, members and experts of Syrian Technocrats during a meeting in Damascus.',
+                    'project_name'=>null,'organization_name'=>'Syrian Technocrats','location'=>'Al-Rayyes Cafe','sort_order'=>50,
+                ],
+                6 => [
+                    'title_ar'=>'عرض مشروع مسار في قمة الابتكار الصحي والذكاء الاصطناعي',
+                    'title_en'=>'Presenting Masar at the Health Innovation and AI Summit',
+                    'caption_ar'=>'المشاركة في معرض قمة الابتكار الصحي والذكاء الاصطناعي وعرض مشروع مسار للزوار.',
+                    'caption_en'=>'Presenting the Masar project to visitors during the Health Innovation and AI Integration Summit.',
+                    'alt_text_ar'=>'أنس يعرض مشروع مسار للزوار خلال قمة الابتكار الصحي والذكاء الاصطناعي في جامعة دمشق.',
+                    'alt_text_en'=>'Anas presenting the Masar project to visitors during the Health Innovation and AI Integration Summit.',
+                    'project_name'=>'Health Innovation & AI Integration Summit','organization_name'=>'MedInvoision','location'=>'Damascus University','sort_order'=>60,
+                ],
+                5 => [
+                    'title_ar'=>'تكريم مشروع مسار ضمن مسابقة ريادة الأعمال الرقمية',
+                    'title_en'=>'Recognition for the Masar project',
+                    'caption_ar'=>'تكريم فريق مسار وتقديمه ضمن المتسابقين الناجحين في مسابقة ريادة الأعمال الرقمية.',
+                    'caption_en'=>'Receiving recognition with the Masar team as successful participants in the Digital Entrepreneurship competition.',
+                    'alt_text_ar'=>'أنس وفريق مسار خلال حفل التكريم ضمن مسابقة ريادة الأعمال الرقمية.',
+                    'alt_text_en'=>'Anas and the Masar team receiving recognition during the Digital Entrepreneurship competition.',
+                    'project_name'=>'Digital Entrepreneurship','organization_name'=>'Violet','location'=>'Dunes Boulevard','sort_order'=>70,
+                ],
+            ];
+            $statement = $pdo->prepare('UPDATE portfolio_media SET title_ar=?,title_en=?,caption_ar=?,caption_en=?,alt_text_ar=?,alt_text_en=?,project_name=?,organization_name=?,location=?,sort_order=? WHERE id=? AND user_id=?');
+            foreach ($updates as $id=>$row) {
+                $statement->execute([
+                    $row['title_ar'],$row['title_en'],$row['caption_ar'],$row['caption_en'],$row['alt_text_ar'],$row['alt_text_en'],
+                    $row['project_name'],$row['organization_name'],$row['location'],$row['sort_order'],$id,$ownerUserId,
+                ]);
+            }
+        },
     ];
 }
 
