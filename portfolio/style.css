@@ -233,7 +233,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid rgba(0, 136, 204, .38
 .field-note:not(.field-note-featured) .field-note-image img { aspect-ratio:4/3; min-height:0; }
 .field-note-portrait:not(.field-note-featured) .field-note-image img { object-position:center 28%; }
 .field-note-featured.field-note-portrait .field-note-image { max-width:430px; justify-self:end; }
-.field-note-featured.field-note-portrait .field-note-image img { min-height:0; max-height:560px; aspect-ratio:4/5; object-position:center 24%; }
+.field-note-featured.field-note-portrait .field-note-image img { height:auto; min-height:0; max-height:560px; aspect-ratio:4/5; object-position:center 24%; }
 .field-note-image:hover img { transform:scale(1.012); filter:saturate(1.03); }
 .field-note figcaption { padding-top:17px; border-top:1px solid var(--line-strong); }
 .field-note-featured figcaption { padding-top:19px; }
